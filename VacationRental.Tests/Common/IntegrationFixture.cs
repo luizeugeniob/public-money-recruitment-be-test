@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using System;
 using System.Net.Http;
+using VacationRental.Api;
 using Xunit;
 
-namespace VacationRental.Api.Tests
+namespace VacationRental.Tests.Common
 {
     [CollectionDefinition("Integration")]
     public sealed class IntegrationFixture : IDisposable, ICollectionFixture<IntegrationFixture>

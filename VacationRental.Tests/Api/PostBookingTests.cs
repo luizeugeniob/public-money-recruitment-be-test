@@ -3,9 +3,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using VacationRental.Application.Models;
+using VacationRental.Tests.Common;
 using Xunit;
 
-namespace VacationRental.Api.Tests
+namespace VacationRental.Tests.Api
 {
     [Collection("Integration")]
     public class PostBookingTests
