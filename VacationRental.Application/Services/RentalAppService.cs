@@ -1,36 +1,30 @@
 ﻿using VacationRental.Application.Interfaces;
-using VacationRental.Application.Models;
+using VacationRental.Domain.Models;
+using VacationRental.Infra.Interfaces;
 
 namespace VacationRental.Application.Services
 {
     public class RentalAppService : IRentalAppService
     {
-        private readonly IDictionary<int, RentalViewModel> _rentals;
+        private readonly IRentalRepository _rentalRepository;
 
-        public RentalAppService(IDictionary<int, RentalViewModel> rentals)
+        public RentalAppService(IRentalRepository rentalRepository)
         {
-            _rentals = rentals;
+            _rentalRepository = rentalRepository;
         }
 
         public RentalViewModel Get(int rentalId)
         {
-            if (!_rentals.ContainsKey(rentalId))
+            var rentalViewModel = _rentalRepository.Get(rentalId);
+            if (rentalViewModel is null)
                 throw new ApplicationException("Rental not found");
 
-            return _rentals[rentalId];
+            return rentalViewModel;
         }
 
         public ResourceIdViewModel Post(RentalBindingModel model)
         {
-            var key = new ResourceIdViewModel { Id = _rentals.Keys.Count + 1 };
-
-            _rentals.Add(key.Id, new RentalViewModel
-            {
-                Id = key.Id,
-                Units = model.Units
-            });
-
-            return key;
+            return _rentalRepository.Add(model);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using VacationRental.Application.Models;
+﻿using VacationRental.Domain.Models;
 
 namespace VacationRental.Application.Interfaces
 {

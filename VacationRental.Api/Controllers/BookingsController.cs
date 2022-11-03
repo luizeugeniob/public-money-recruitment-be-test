@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VacationRental.Application.Interfaces;
-using VacationRental.Application.Models;
+using VacationRental.Domain.Models;
 
 namespace VacationRental.Api.Controllers
 {

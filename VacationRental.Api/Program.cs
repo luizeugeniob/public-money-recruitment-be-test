@@ -22,6 +22,7 @@ namespace VacationRental.Api
             builder.Services.AddSwaggerGen(opts => opts.SwaggerDoc("v1", new OpenApiInfo { Title = "Vacation rental information", Version = "v1" }));
 
             builder.Services.AddApplication();
+            builder.Services.AddInfra();
 
             var app = builder.Build();
 
