@@ -1,4 +1,5 @@
 ﻿using VacationRental.Application.Interfaces;
+using VacationRental.Domain.Exceptions;
 using VacationRental.Domain.Models;
 using VacationRental.Infra.Interfaces;
 
@@ -21,7 +22,7 @@ namespace VacationRental.Application.Services
         {
             var bookingViewModel = _bookingRepository.Get(bookingId);
             if (bookingViewModel is null)
-                throw new ApplicationException("Booking not found");
+                throw new BookingNotFoundException();
 
             return bookingViewModel;
         }
@@ -29,10 +30,10 @@ namespace VacationRental.Application.Services
         public ResourceIdViewModel Post(BookingBindingModel model)
         {
             if (model.Nights <= 0)
-                throw new ApplicationException("Nigts must be positive");
+                throw new NightsMustBePositiveException();
 
             if (!_rentalRepository.Exists(model.RentalId))
-                throw new ApplicationException("Rental not found");
+                throw new RentalNotFoundException();
 
             for (var i = 0; i < model.Nights; i++)
             {
@@ -48,7 +49,7 @@ namespace VacationRental.Application.Services
                     }
                 }
                 if (count >= _rentalRepository.Get(model.RentalId)?.Units)
-                    throw new ApplicationException("Not available");
+                    throw new RentalNotAvailableException();
             }
 
             return _bookingRepository.Add(model);

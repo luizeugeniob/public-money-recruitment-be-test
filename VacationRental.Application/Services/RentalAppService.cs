@@ -1,4 +1,5 @@
 ﻿using VacationRental.Application.Interfaces;
+using VacationRental.Domain.Exceptions;
 using VacationRental.Domain.Models;
 using VacationRental.Infra.Interfaces;
 
@@ -17,7 +18,7 @@ namespace VacationRental.Application.Services
         {
             var rentalViewModel = _rentalRepository.Get(rentalId);
             if (rentalViewModel is null)
-                throw new ApplicationException("Rental not found");
+                throw new RentalNotFoundException();
 
             return rentalViewModel;
         }

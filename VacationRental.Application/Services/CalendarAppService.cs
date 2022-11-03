@@ -1,4 +1,5 @@
 ﻿using VacationRental.Application.Interfaces;
+using VacationRental.Domain.Exceptions;
 using VacationRental.Domain.Models;
 using VacationRental.Infra.Interfaces;
 
@@ -20,10 +21,10 @@ namespace VacationRental.Application.Services
         public CalendarViewModel Get(int rentalId, DateTime start, int nights)
         {
             if (nights < 0)
-                throw new ApplicationException("Nights must be positive");
+                throw new NightsMustBePositiveException();
 
             if (!_rentalRepository.Exists(rentalId))
-                throw new ApplicationException("Rental not found");
+                throw new RentalNotFoundException();
 
             var result = new CalendarViewModel
             {
