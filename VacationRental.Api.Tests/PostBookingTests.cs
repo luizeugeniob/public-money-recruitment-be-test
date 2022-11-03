@@ -34,9 +34,9 @@ namespace VacationRental.Api.Tests
 
             var postBookingRequest = new BookingBindingModel
             {
-                 RentalId = postRentalResult.Id,
-                 Nights = 3,
-                 Start = new DateTime(2001, 01, 01)
+                RentalId = postRentalResult.Id,
+                Nights = 3,
+                Start = new DateTime(2001, 01, 01)
             };
 
             ResourceIdViewModel postBookingResult;
@@ -91,12 +91,10 @@ namespace VacationRental.Api.Tests
                 Start = new DateTime(2002, 01, 02)
             };
 
-            await Assert.ThrowsAsync<ApplicationException>(async () =>
+            using (var postBooking2Response = await _client.PostAsJsonAsync($"/api/v1/bookings", postBooking2Request))
             {
-                using (var postBooking2Response = await _client.PostAsJsonAsync($"/api/v1/bookings", postBooking2Request))
-                {
-                }
-            });
+                Assert.Equal(HttpStatusCode.InternalServerError, postBooking2Response.StatusCode);
+            }
         }
     }
 }
