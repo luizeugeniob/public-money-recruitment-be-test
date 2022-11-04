@@ -9,13 +9,16 @@ namespace VacationRental.Application.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IRentalRepository _rentalRepository;
+        private readonly ICalendarAppService _calendarAppService;
 
         public BookingAppService(
             IBookingRepository bookingRepository,
-            IRentalRepository rentalRepository)
+            IRentalRepository rentalRepository,
+            ICalendarAppService calendarAppService)
         {
             _bookingRepository = bookingRepository;
             _rentalRepository = rentalRepository;
+            _calendarAppService = calendarAppService;
         }
 
         public BookingViewModel Get(int bookingId)
@@ -35,21 +38,9 @@ namespace VacationRental.Application.Services
             if (!_rentalRepository.Exists(model.RentalId))
                 throw new RentalNotFoundException();
 
-            for (var i = 0; i < model.Nights; i++)
+            if (!_calendarAppService.HasAtLeastOneUnoccupiedUnitPerNight(model.RentalId, model.Start, model.Nights))
             {
-                var count = 0;
-                foreach (var booking in _bookingRepository.GetAll())
-                {
-                    if (booking.RentalId == model.RentalId
-                        && (booking.Start <= model.Start.Date && booking.Start.AddDays(booking.Nights) > model.Start.Date)
-                        || (booking.Start < model.Start.AddDays(model.Nights) && booking.Start.AddDays(booking.Nights) >= model.Start.AddDays(model.Nights))
-                        || (booking.Start > model.Start && booking.Start.AddDays(booking.Nights) < model.Start.AddDays(model.Nights)))
-                    {
-                        count++;
-                    }
-                }
-                if (count >= _rentalRepository.Get(model.RentalId)?.Units)
-                    throw new RentalNotAvailableException();
+                throw new RentalNotAvailableException();
             }
 
             return _bookingRepository.Add(model);

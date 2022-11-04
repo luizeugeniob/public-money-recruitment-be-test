@@ -53,5 +53,14 @@ namespace VacationRental.Application.Services
 
             return result;
         }
+
+        public bool HasAtLeastOneUnoccupiedUnitPerNight(int rentalId, DateTime start, int nights)
+        {
+            var rental = _rentalRepository.Get(rentalId);
+            if (rental is null)
+                throw new RentalNotFoundException();
+
+            return Get(rentalId, start, nights).Dates.All(x => x.Bookings.Count < rental.Units);
+        }
     }
 }
