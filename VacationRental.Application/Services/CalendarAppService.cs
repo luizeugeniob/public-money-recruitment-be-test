@@ -1,5 +1,6 @@
 ﻿using VacationRental.Application.Interfaces;
 using VacationRental.Domain.Exceptions;
+using VacationRental.Domain.Interfaces;
 using VacationRental.Domain.Models;
 using VacationRental.Infra.Interfaces;
 
@@ -9,13 +10,16 @@ namespace VacationRental.Application.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IRentalRepository _rentalRepository;
+        private readonly ICalendarDateFactory _calendarDateFactory;
 
         public CalendarAppService(
             IBookingRepository bookingRepository,
-            IRentalRepository rentalRepository)
+            IRentalRepository rentalRepository,
+            ICalendarDateFactory calendarDateFactory)
         {
             _bookingRepository = bookingRepository;
             _rentalRepository = rentalRepository;
+            _calendarDateFactory = calendarDateFactory;
         }
 
         public CalendarViewModel Get(int rentalId, DateTime start, int nights)
@@ -26,32 +30,13 @@ namespace VacationRental.Application.Services
             if (!_rentalRepository.Exists(rentalId))
                 throw new RentalNotFoundException();
 
-            var result = new CalendarViewModel
+            var bookings = _bookingRepository.GetBookingsRentedFor(rentalId);
+
+            return new CalendarViewModel
             {
                 RentalId = rentalId,
-                Dates = new List<CalendarDateViewModel>()
+                Dates = _calendarDateFactory.CreateCalendarDates(start, nights, bookings)
             };
-
-            for (var i = 0; i < nights; i++)
-            {
-                var date = new CalendarDateViewModel
-                {
-                    Date = start.Date.AddDays(i),
-                    Bookings = new List<CalendarBookingViewModel>()
-                };
-
-                foreach (var booking in _bookingRepository.GetBookingsRentedFor(rentalId))
-                {
-                    if (booking.Start <= date.Date && booking.Start.AddDays(booking.Nights) > date.Date)
-                    {
-                        date.Bookings.Add(new CalendarBookingViewModel { Id = booking.Id });
-                    }
-                }
-
-                result.Dates.Add(date);
-            }
-
-            return result;
         }
 
         public bool HasAtLeastOneUnoccupiedUnitPerNight(int rentalId, DateTime start, int nights)

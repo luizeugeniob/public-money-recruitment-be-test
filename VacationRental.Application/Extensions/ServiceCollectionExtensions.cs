@@ -1,5 +1,7 @@
 ﻿using VacationRental.Application.Interfaces;
 using VacationRental.Application.Services;
+using VacationRental.Domain.Factories;
+using VacationRental.Domain.Interfaces;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -9,6 +11,12 @@ namespace Microsoft.Extensions.DependencyInjection
             => services
                 .AddScoped<IRentalAppService, RentalAppService>()
                 .AddScoped<IBookingAppService, BookingAppService>()
-                .AddScoped<ICalendarAppService, CalendarAppService>();
+                .AddScoped<ICalendarAppService, CalendarAppService>()
+                .AddFactories();
+
+        private static IServiceCollection AddFactories(this IServiceCollection services)
+            => services
+                .AddScoped<ICalendarDateFactory, CalendarDateFactory>()
+                .AddScoped<ICalendarBookingFactory, CalendarBookingFactory>();
     }
 }
