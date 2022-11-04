@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using Bogus;
-using Moq;
 using System;
 using VacationRental.Application.Interfaces;
 using VacationRental.Application.Services;
