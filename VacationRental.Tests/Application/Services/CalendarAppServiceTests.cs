@@ -2,7 +2,6 @@
 using Bogus;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using VacationRental.Application.Services;
 using VacationRental.Domain.Exceptions;
 using VacationRental.Domain.Interfaces;
@@ -79,89 +78,6 @@ public class CalendarAppServiceTests
     }
 
     [Fact]
-    public void GivenANonExistentRental_WhenVerifyIfHasAtLeastOneUnoccupiedUnitPerNight_ThenThrowAnException()
-    {
-        // Arrange
-        var service = BuildService();
-
-        var rentalId = _faker.Random.Int(1, int.MaxValue);
-        _rentalRepository
-            .Setup(x => x.Get(rentalId))
-            .Returns((RentalViewModel)null);
-
-        // Act & Assert
-        Assert.Throws<RentalNotFoundException>(() => service.HasAtLeastOneUnoccupiedUnitPerNight(It.IsAny<int>(), It.IsAny<DateTime>(), _faker.Random.Int(min: 1)));
-    }
-
-    [Theory]
-    [InlineData(3, 2, 0)]
-    [InlineData(3, 1, 0)]
-    [InlineData(3, 0, 0)]
-    [InlineData(3, 0, 1)]
-    [InlineData(3, 0, 2)]
-    public void GivenAExistentRentalUnoccupied_WhenVerifyIfHasAtLeastOneUnoccupiedUnitPerNight_ThenReturnTrue(int units, int bookings, int preparationTimes)
-    {
-        // Arrange
-        var service = BuildService();
-
-        _rentalRepository
-            .Setup(x => x.Get(It.IsAny<int>()))
-            .Returns(new RentalViewModel { Units = units });
-
-        var dates = new List<CalendarDateViewModel>
-        {
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-        };
-
-        _calendarDateFactory
-            .Setup(x => x.CreateCalendarDates(It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<IEnumerable<BookingViewModel>>(), It.IsAny<int>()))
-            .Returns(dates);
-
-        // Act
-        var response = service.HasAtLeastOneUnoccupiedUnitPerNight(It.IsAny<int>(), It.IsAny<DateTime>(), _faker.Random.Int(min: 1));
-
-        // Assert
-        Assert.True(response);
-    }
-
-    /// <summary>
-    /// A rental with 3 units is fully occupied for the selected night when it has (3 bookings) OR (2 bookings and 1 preparation time period) OR (1 booking and 2 preparation time periods) OR (3 preparation time periods).
-    /// </summary>
-    [Theory]
-    [InlineData(3, 3, 0)]
-    [InlineData(3, 2, 1)]
-    [InlineData(3, 1, 2)]
-    [InlineData(3, 0, 3)]
-    public void GivenAExistentRentalOccupied_WhenVerifyIfHasAtLeastOneUnoccupiedUnitPerNight_ThenReturnFalse(int units, int bookings, int preparationTimes)
-    {
-        // Arrange
-        var service = BuildService();
-
-        _rentalRepository
-            .Setup(x => x.Get(It.IsAny<int>()))
-            .Returns(new RentalViewModel { Units = units });
-
-        var dates = new List<CalendarDateViewModel>
-        {
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-            new CalendarDateViewModel { Bookings = _fixture.CreateMany<CalendarBookingViewModel>(bookings).ToList(), PreparationTimes = _fixture.CreateMany<CalendarPreparationTimeViewModel>(preparationTimes).ToList() },
-        };
-
-        _calendarDateFactory
-            .Setup(x => x.CreateCalendarDates(It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<IEnumerable<BookingViewModel>>(), It.IsAny<int>()))
-            .Returns(dates);
-
-        // Act
-        var response = service.HasAtLeastOneUnoccupiedUnitPerNight(It.IsAny<int>(), It.IsAny<DateTime>(), _faker.Random.Int(min: 1));
-
-        // Assert
-        Assert.False(response);
-    }
-
-    [Fact]
     public void GivenANonExistentRental_WhenGetUnoccupiedUnitForSpecificNight_ThenThrowAnException()
     {
         // Arrange
@@ -174,6 +90,34 @@ public class CalendarAppServiceTests
 
         // Act & Assert
         Assert.Throws<RentalNotFoundException>(() => service.GetUnoccupiedUnitForSpecificNight(It.IsAny<int>(), It.IsAny<DateTime>()));
+    }
+
+    [Fact]
+    public void GivenAExistentRental_WhenSimulateCalendar_ThenReturnCalendar()
+    {
+        // Arrange
+        var service = BuildService();
+
+        var rentalId = _faker.Random.Int(1, int.MaxValue);
+
+        var nights = _faker.Random.Int(1, 999);
+        var firstNight = DateTime.Now;
+
+        _bookingRepository
+            .Setup(x => x.GetBookingsRentedFor(rentalId))
+            .Returns(new List<BookingViewModel>
+            {
+                new BookingViewModel { Start = firstNight },
+                new BookingViewModel { Start = DateTime.Now, Nights = nights }
+            });
+
+        // Act
+        var response = service.SimulateCalendar(rentalId, It.IsAny<int>());
+
+        // Assert
+        Assert.NotNull(response);
+        _bookingRepository.Verify(x => x.GetBookingsRentedFor(rentalId), Times.Once);
+        _calendarDateFactory.Verify(x => x.CreateCalendarDates(firstNight, nights, It.IsAny<IEnumerable<BookingViewModel>>(), It.IsAny<int>()), Times.Once);
     }
 
     private CalendarAppService BuildService()

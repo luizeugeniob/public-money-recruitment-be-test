@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using VacationRental.Application.Interfaces;
-using VacationRental.Domain.Models;
+using VacationRental.Domain.Models.Interfaces;
 
 namespace VacationRental.Api.Controllers
 {
@@ -17,7 +17,7 @@ namespace VacationRental.Api.Controllers
         }
 
         [HttpGet]
-        public CalendarViewModel Get(int rentalId, DateTime start, int nights)
+        public ICalendarViewModel Get(int rentalId, DateTime start, int nights)
         {
             return _calendarAppService.Get(rentalId, start, nights);
         }

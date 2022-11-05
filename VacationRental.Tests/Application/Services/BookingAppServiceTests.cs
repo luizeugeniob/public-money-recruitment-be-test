@@ -5,6 +5,7 @@ using VacationRental.Application.Interfaces;
 using VacationRental.Application.Services;
 using VacationRental.Domain.Exceptions;
 using VacationRental.Domain.Models;
+using VacationRental.Domain.Models.Interfaces;
 using VacationRental.Infra.Interfaces;
 
 namespace VacationRental.Tests.Application.Services;
@@ -83,8 +84,8 @@ public class BookingAppServiceTests
 
         var rentalId = _faker.Random.Int(1, int.MaxValue);
         _rentalRepository
-            .Setup(x => x.Exists(rentalId))
-            .Returns(false);
+            .Setup(x => x.Get(rentalId))
+            .Returns((RentalViewModel)null);
 
         // Act & Assert
         Assert.Throws<RentalNotFoundException>(() => service.Post(new BookingBindingModel { Nights = _faker.Random.Int(1, int.MaxValue), RentalId = rentalId }));
@@ -98,11 +99,16 @@ public class BookingAppServiceTests
 
         var rentalId = _faker.Random.Int(1, int.MaxValue);
         _rentalRepository
-            .Setup(x => x.Exists(rentalId))
-            .Returns(true);
+            .Setup(x => x.Get(rentalId))
+            .Returns(new RentalViewModel());
 
+        var simulatedCalendar = new Mock<ICalendarViewModel>();
         _calendarAppService
-            .Setup(x => x.HasAtLeastOneUnoccupiedUnitPerNight(rentalId, It.IsAny<DateTime>(), It.IsAny<int>()))
+            .Setup(x => x.Get(rentalId, It.IsAny<DateTime>(), It.IsAny<int>()))
+            .Returns(simulatedCalendar.Object);
+
+        simulatedCalendar
+            .Setup(x => x.HasUnoccupiedUnitsAllDays(It.IsAny<int>()))
             .Returns(false);
 
         // Act & Assert
@@ -117,11 +123,16 @@ public class BookingAppServiceTests
 
         var rentalId = _faker.Random.Int(1, int.MaxValue);
         _rentalRepository
-            .Setup(x => x.Exists(rentalId))
-            .Returns(true);
+            .Setup(x => x.Get(rentalId))
+            .Returns(new RentalViewModel());
 
+        var simulatedCalendar = new Mock<ICalendarViewModel>();
         _calendarAppService
-            .Setup(x => x.HasAtLeastOneUnoccupiedUnitPerNight(rentalId, It.IsAny<DateTime>(), It.IsAny<int>()))
+            .Setup(x => x.Get(rentalId, It.IsAny<DateTime>(), It.IsAny<int>()))
+            .Returns(simulatedCalendar.Object);
+
+        simulatedCalendar
+            .Setup(x => x.HasUnoccupiedUnitsAllDays(It.IsAny<int>()))
             .Returns(true);
 
         // Act

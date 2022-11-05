@@ -37,5 +37,17 @@ namespace VacationRental.Infra.Repositories
 
             return rentalViewModel;
         }
+
+        public ResourceIdViewModel Update(int rentalId, RentalBindingModel model)
+        {
+            _rentals[rentalId] = new RentalViewModel
+            {
+                Id = rentalId,
+                Units = model.Units,
+                PreparationTimeInDays = model.PreparationTimeInDays
+            };
+
+            return new ResourceIdViewModel { Id = rentalId };
+        }
     }
 }

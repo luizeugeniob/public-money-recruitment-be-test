@@ -7,5 +7,7 @@ namespace VacationRental.Application.Interfaces
         RentalViewModel Get(int rentalId);
 
         ResourceIdViewModel Post(RentalBindingModel model);
+
+        ResourceIdViewModel Put(int rentalId, RentalBindingModel model);
     }
 }

@@ -9,5 +9,7 @@ namespace VacationRental.Infra.Interfaces
         bool Exists(int rentalId);
 
         RentalViewModel Get(int rentalId);
+
+        ResourceIdViewModel Update(int rentalId, RentalBindingModel model);
     }
 }

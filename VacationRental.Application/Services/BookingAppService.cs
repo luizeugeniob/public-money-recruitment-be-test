@@ -35,10 +35,12 @@ namespace VacationRental.Application.Services
             if (model.Nights <= 0)
                 throw new NightsMustBePositiveException();
 
-            if (!_rentalRepository.Exists(model.RentalId))
+            var rental = _rentalRepository.Get(model.RentalId);
+            if (rental is null)
                 throw new RentalNotFoundException();
 
-            if (!_calendarAppService.HasAtLeastOneUnoccupiedUnitPerNight(model.RentalId, model.Start, model.Nights))
+            var calendar = _calendarAppService.Get(model.RentalId, model.Start, model.Nights);
+            if (!calendar.HasUnoccupiedUnitsAllDays(rental.Units))
             {
                 throw new RentalNotAvailableException();
             }

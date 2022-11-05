@@ -1,13 +1,13 @@
-﻿using VacationRental.Domain.Models;
+﻿using VacationRental.Domain.Models.Interfaces;
 
 namespace VacationRental.Application.Interfaces
 {
     public interface ICalendarAppService
     {
-        CalendarViewModel Get(int rentalId, DateTime start, int nights);
+        ICalendarViewModel Get(int rentalId, DateTime start, int nights);
 
         int GetUnoccupiedUnitForSpecificNight(int rentalId, DateTime start);
 
-        bool HasAtLeastOneUnoccupiedUnitPerNight(int rentalId, DateTime start, int nights);
+        ICalendarViewModel SimulateCalendar(int rentalId, int newPreparationTimeInDays);
     }
 }
