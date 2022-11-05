@@ -1,43 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using VacationRental.Api.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using VacationRental.Application.Interfaces;
+using VacationRental.Domain.Models;
 
-namespace VacationRental.Api.Controllers
+namespace VacationRental.Api.Controllers;
+
+[Route("api/v1/rentals")]
+[ApiController]
+public class RentalsController : ControllerBase
 {
-    [Route("api/v1/rentals")]
-    [ApiController]
-    public class RentalsController : ControllerBase
+    private readonly IRentalAppService _rentalAppService;
+
+    public RentalsController(IRentalAppService rentalAppService)
     {
-        private readonly IDictionary<int, RentalViewModel> _rentals;
+        _rentalAppService = rentalAppService;
+    }
 
-        public RentalsController(IDictionary<int, RentalViewModel> rentals)
-        {
-            _rentals = rentals;
-        }
+    [HttpGet]
+    [Route("{rentalId:int}")]
+    public RentalViewModel Get(int rentalId)
+    {
+        return _rentalAppService.Get(rentalId);
+    }
 
-        [HttpGet]
-        [Route("{rentalId:int}")]
-        public RentalViewModel Get(int rentalId)
-        {
-            if (!_rentals.ContainsKey(rentalId))
-                throw new ApplicationException("Rental not found");
+    [HttpPost]
+    public ResourceIdViewModel Post(RentalBindingModel model)
+    {
+        return _rentalAppService.Post(model);
+    }
 
-            return _rentals[rentalId];
-        }
-
-        [HttpPost]
-        public ResourceIdViewModel Post(RentalBindingModel model)
-        {
-            var key = new ResourceIdViewModel { Id = _rentals.Keys.Count + 1 };
-
-            _rentals.Add(key.Id, new RentalViewModel
-            {
-                Id = key.Id,
-                Units = model.Units
-            });
-
-            return key;
-        }
+    [HttpPut]
+    [Route("{rentalId:int}")]
+    public ResourceIdViewModel Put(int rentalId, RentalBindingModel model)
+    {
+        return _rentalAppService.Put(rentalId, model);
     }
 }
