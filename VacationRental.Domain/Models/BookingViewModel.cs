@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VacationRental.Domain.Models
+﻿namespace VacationRental.Domain.Models
 {
     public class BookingViewModel
     {
@@ -8,5 +6,6 @@ namespace VacationRental.Domain.Models
         public int RentalId { get; set; }
         public DateTime Start { get; set; }
         public int Nights { get; set; }
+        public int Unit { get; set; }
     }
 }

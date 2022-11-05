@@ -12,7 +12,7 @@ namespace VacationRental.Infra.Repositories
             _bookings = bookings;
         }
 
-        public ResourceIdViewModel Add(BookingBindingModel model)
+        public ResourceIdViewModel Add(BookingBindingModel model, int unit)
         {
             var key = new ResourceIdViewModel { Id = _bookings.Keys.Count + 1 };
 
@@ -21,7 +21,8 @@ namespace VacationRental.Infra.Repositories
                 Id = key.Id,
                 Nights = model.Nights,
                 RentalId = model.RentalId,
-                Start = model.Start.Date
+                Start = model.Start.Date,
+                Unit = unit
             });
 
             return key;
@@ -29,22 +30,14 @@ namespace VacationRental.Infra.Repositories
 
         public BookingViewModel Get(int bookingId)
         {
-            if (!_bookings.TryGetValue(bookingId, out var bookingViewModel))
-            {
-                return null;
-            }
+            _bookings.TryGetValue(bookingId, out var bookingViewModel);
 
             return bookingViewModel;
         }
 
-        public IEnumerable<BookingViewModel> GetAll()
-        {
-            return _bookings.Values;
-        }
-
         public IEnumerable<BookingViewModel> GetBookingsRentedFor(int rentalId)
         {
-            return GetAll().Where(x => x.RentalId == rentalId);
+            return _bookings.Values.Where(x => x.RentalId == rentalId);
         }
     }
 }

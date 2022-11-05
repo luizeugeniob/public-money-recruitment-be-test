@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IServiceCollection AddFactories(this IServiceCollection services)
             => services
                 .AddScoped<ICalendarDateFactory, CalendarDateFactory>()
-                .AddScoped<ICalendarBookingFactory, CalendarBookingFactory>();
+                .AddScoped<ICalendarBookingFactory, CalendarBookingFactory>()
+                .AddScoped<ICalendarPreparationTimesFactory, CalendarPreparationTimesFactory>();
     }
 }

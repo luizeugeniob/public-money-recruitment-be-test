@@ -19,7 +19,8 @@ namespace VacationRental.Infra.Repositories
             _rentals.Add(key.Id, new RentalViewModel
             {
                 Id = key.Id,
-                Units = model.Units
+                Units = model.Units,
+                PreparationTimeInDays = model.PreparationTimeInDays
             });
 
             return key;
@@ -32,10 +33,7 @@ namespace VacationRental.Infra.Repositories
 
         public RentalViewModel Get(int rentalId)
         {
-            if (!_rentals.TryGetValue(rentalId, out var rentalViewModel))
-            {
-                return null;
-            }
+            _rentals.TryGetValue(rentalId, out var rentalViewModel);
 
             return rentalViewModel;
         }

@@ -43,7 +43,9 @@ namespace VacationRental.Application.Services
                 throw new RentalNotAvailableException();
             }
 
-            return _bookingRepository.Add(model);
+            var unoccupiedUnit = _calendarAppService.GetUnoccupiedUnitForSpecificNight(model.RentalId, model.Start);
+
+            return _bookingRepository.Add(model, unoccupiedUnit);
         }
     }
 }

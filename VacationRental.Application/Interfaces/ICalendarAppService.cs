@@ -6,6 +6,8 @@ namespace VacationRental.Application.Interfaces
     {
         CalendarViewModel Get(int rentalId, DateTime start, int nights);
 
+        int GetUnoccupiedUnitForSpecificNight(int rentalId, DateTime start);
+
         bool HasAtLeastOneUnoccupiedUnitPerNight(int rentalId, DateTime start, int nights);
     }
 }

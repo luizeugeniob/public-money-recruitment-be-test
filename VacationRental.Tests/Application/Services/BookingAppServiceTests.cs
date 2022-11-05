@@ -128,7 +128,7 @@ public class BookingAppServiceTests
         service.Post(new BookingBindingModel { Nights = _faker.Random.Int(1, int.MaxValue), RentalId = rentalId });
 
         // Assert
-        _bookingRepository.Verify(x => x.Add(It.IsAny<BookingBindingModel>()), Times.Once);
+        _bookingRepository.Verify(x => x.Add(It.IsAny<BookingBindingModel>(), It.IsAny<int>()), Times.Once);
     }
 
     private BookingAppService BuildService()

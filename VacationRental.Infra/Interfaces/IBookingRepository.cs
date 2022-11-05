@@ -4,11 +4,9 @@ namespace VacationRental.Infra.Interfaces
 {
     public interface IBookingRepository
     {
-        ResourceIdViewModel Add(BookingBindingModel model);
+        ResourceIdViewModel Add(BookingBindingModel model, int unit);
 
         BookingViewModel Get(int bookingId);
-
-        IEnumerable<BookingViewModel> GetAll();
 
         IEnumerable<BookingViewModel> GetBookingsRentedFor(int rentalId);
     }

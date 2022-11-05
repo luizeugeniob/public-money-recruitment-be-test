@@ -27,7 +27,8 @@ namespace VacationRental.Application.Services
             if (nights < 0)
                 throw new NightsMustBePositiveException();
 
-            if (!_rentalRepository.Exists(rentalId))
+            var rental = _rentalRepository.Get(rentalId);
+            if (rental is null)
                 throw new RentalNotFoundException();
 
             var bookings = _bookingRepository.GetBookingsRentedFor(rentalId);
@@ -35,7 +36,7 @@ namespace VacationRental.Application.Services
             return new CalendarViewModel
             {
                 RentalId = rentalId,
-                Dates = _calendarDateFactory.CreateCalendarDates(start, nights, bookings)
+                Dates = _calendarDateFactory.CreateCalendarDates(start, nights, bookings, rental.PreparationTimeInDays)
             };
         }
 
@@ -45,7 +46,22 @@ namespace VacationRental.Application.Services
             if (rental is null)
                 throw new RentalNotFoundException();
 
-            return Get(rentalId, start, nights).Dates.All(x => x.Bookings.Count < rental.Units);
+            var calendar = Get(rentalId, start, nights);
+
+            return calendar.Dates.All(x => x.Bookings.Count + x.PreparationTimes.Count < rental.Units);
+        }
+
+        public int GetUnoccupiedUnitForSpecificNight(int rentalId, DateTime start)
+        {
+            var rental = _rentalRepository.Get(rentalId);
+            if (rental is null)
+                throw new RentalNotFoundException();
+
+            var calendar = Get(rentalId, start, 1);
+
+            var units = calendar.GetUnitsOccupiedAt(start);
+
+            return rental.Units.RandomIntExcept(units);
         }
     }
 }

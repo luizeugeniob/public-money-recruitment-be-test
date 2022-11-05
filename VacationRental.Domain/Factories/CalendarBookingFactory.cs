@@ -9,7 +9,7 @@ public class CalendarBookingFactory : ICalendarBookingFactory
     {
         return bookings
             .Where(x => x.Start <= currentDate && x.Start.AddDays(x.Nights) > currentDate)
-            .Select(x => new CalendarBookingViewModel { Id = x.Id })
+            .Select(x => new CalendarBookingViewModel { Id = x.Id, Unit = x.Unit })
             .ToList();
     }
 }
