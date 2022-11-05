@@ -1,7 +1,6 @@
-﻿namespace VacationRental.Domain.Models
+﻿namespace VacationRental.Domain.Models;
+
+public class ResourceIdViewModel
 {
-    public class ResourceIdViewModel
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }

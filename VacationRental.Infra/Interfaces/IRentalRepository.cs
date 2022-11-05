@@ -1,15 +1,14 @@
 ﻿using VacationRental.Domain.Models;
 
-namespace VacationRental.Infra.Interfaces
+namespace VacationRental.Infra.Interfaces;
+
+public interface IRentalRepository
 {
-    public interface IRentalRepository
-    {
-        ResourceIdViewModel Add(RentalBindingModel model);
+    ResourceIdViewModel Add(RentalBindingModel model);
 
-        bool Exists(int rentalId);
+    bool Exists(int rentalId);
 
-        RentalViewModel Get(int rentalId);
+    RentalViewModel Get(int rentalId);
 
-        ResourceIdViewModel Update(int rentalId, RentalBindingModel model);
-    }
+    ResourceIdViewModel Update(int rentalId, RentalBindingModel model);
 }

@@ -3,23 +3,22 @@ using System;
 using VacationRental.Application.Interfaces;
 using VacationRental.Domain.Models.Interfaces;
 
-namespace VacationRental.Api.Controllers
+namespace VacationRental.Api.Controllers;
+
+[Route("api/v1/calendar")]
+[ApiController]
+public class CalendarController : ControllerBase
 {
-    [Route("api/v1/calendar")]
-    [ApiController]
-    public class CalendarController : ControllerBase
+    private readonly ICalendarAppService _calendarAppService;
+
+    public CalendarController(ICalendarAppService calendarAppService)
     {
-        private readonly ICalendarAppService _calendarAppService;
+        _calendarAppService = calendarAppService;
+    }
 
-        public CalendarController(ICalendarAppService calendarAppService)
-        {
-            _calendarAppService = calendarAppService;
-        }
-
-        [HttpGet]
-        public ICalendarViewModel Get(int rentalId, DateTime start, int nights)
-        {
-            return _calendarAppService.Get(rentalId, start, nights);
-        }
+    [HttpGet]
+    public ICalendarViewModel Get(int rentalId, DateTime start, int nights)
+    {
+        return _calendarAppService.Get(rentalId, start, nights);
     }
 }

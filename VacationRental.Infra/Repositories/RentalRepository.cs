@@ -1,53 +1,52 @@
 ﻿using VacationRental.Domain.Models;
 using VacationRental.Infra.Interfaces;
 
-namespace VacationRental.Infra.Repositories
+namespace VacationRental.Infra.Repositories;
+
+public class RentalRepository : IRentalRepository
 {
-    public class RentalRepository : IRentalRepository
+    private readonly IDictionary<int, RentalViewModel> _rentals;
+
+    public RentalRepository(IDictionary<int, RentalViewModel> rentals)
     {
-        private readonly IDictionary<int, RentalViewModel> _rentals;
+        _rentals = rentals;
+    }
 
-        public RentalRepository(IDictionary<int, RentalViewModel> rentals)
+    public ResourceIdViewModel Add(RentalBindingModel model)
+    {
+        var key = new ResourceIdViewModel { Id = _rentals.Keys.Count + 1 };
+
+        _rentals.Add(key.Id, new RentalViewModel
         {
-            _rentals = rentals;
-        }
+            Id = key.Id,
+            Units = model.Units,
+            PreparationTimeInDays = model.PreparationTimeInDays
+        });
 
-        public ResourceIdViewModel Add(RentalBindingModel model)
+        return key;
+    }
+
+    public bool Exists(int rentalId)
+    {
+        return _rentals.ContainsKey(rentalId);
+    }
+
+    public RentalViewModel Get(int rentalId)
+    {
+        _rentals.TryGetValue(rentalId, out var rentalViewModel);
+
+        return rentalViewModel;
+    }
+
+    public ResourceIdViewModel Update(int rentalId, RentalBindingModel model)
+    {
+        _rentals[rentalId] = new RentalViewModel
         {
-            var key = new ResourceIdViewModel { Id = _rentals.Keys.Count + 1 };
+            Id = rentalId,
+            Units = model.Units,
+            PreparationTimeInDays = model.PreparationTimeInDays
+        };
 
-            _rentals.Add(key.Id, new RentalViewModel
-            {
-                Id = key.Id,
-                Units = model.Units,
-                PreparationTimeInDays = model.PreparationTimeInDays
-            });
-
-            return key;
-        }
-
-        public bool Exists(int rentalId)
-        {
-            return _rentals.ContainsKey(rentalId);
-        }
-
-        public RentalViewModel Get(int rentalId)
-        {
-            _rentals.TryGetValue(rentalId, out var rentalViewModel);
-
-            return rentalViewModel;
-        }
-
-        public ResourceIdViewModel Update(int rentalId, RentalBindingModel model)
-        {
-            _rentals[rentalId] = new RentalViewModel
-            {
-                Id = rentalId,
-                Units = model.Units,
-                PreparationTimeInDays = model.PreparationTimeInDays
-            };
-
-            return new ResourceIdViewModel { Id = rentalId };
-        }
+        return new ResourceIdViewModel { Id = rentalId };
     }
 }

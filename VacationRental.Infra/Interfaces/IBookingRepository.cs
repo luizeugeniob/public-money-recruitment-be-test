@@ -1,13 +1,12 @@
 ﻿using VacationRental.Domain.Models;
 
-namespace VacationRental.Infra.Interfaces
+namespace VacationRental.Infra.Interfaces;
+
+public interface IBookingRepository
 {
-    public interface IBookingRepository
-    {
-        ResourceIdViewModel Add(BookingBindingModel model, int unit);
+    ResourceIdViewModel Add(BookingBindingModel model, int unit);
 
-        BookingViewModel Get(int bookingId);
+    BookingViewModel Get(int bookingId);
 
-        IEnumerable<BookingViewModel> GetBookingsRentedFor(int rentalId);
-    }
+    IEnumerable<BookingViewModel> GetBookingsRentedFor(int rentalId);
 }

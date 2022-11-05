@@ -1,7 +1,6 @@
-﻿namespace VacationRental.Domain.Models
+﻿namespace VacationRental.Domain.Models;
+
+public class CalendarPreparationTimeViewModel
 {
-    public class CalendarPreparationTimeViewModel
-    {
-        public int Unit { get; set; }
-    }
+    public int Unit { get; set; }
 }

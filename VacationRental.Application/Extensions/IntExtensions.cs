@@ -2,7 +2,7 @@
 
 public static class IntExtensions
 {
-    public static int RandomIntExcept(this int maxNumber, IEnumerable<int> except)
+    public static int GetRandomIntExcept(this int maxNumber, IEnumerable<int> except)
     {
         var exclude = new HashSet<int>(except);
         var range = Enumerable.Range(1, maxNumber).Where(i => !exclude.Contains(i));
